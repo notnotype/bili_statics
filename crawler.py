@@ -214,6 +214,7 @@ def crawl_everyday(uid, save_path):
             print(f'crawler comment: {index}')
             _comment_path = f'{_comment_dir}/comment_{index}.json'
             saveto(comment, _comment_path)
+            sleep(REQUEST_INTERVAL)
 
 def crawl_comment(uid, save_path):
     _daystr = daystr()
