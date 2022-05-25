@@ -134,7 +134,7 @@ def get_comments(aid, pg=1, pn=2^31-1):
         yield None
 
 
-REQUEST_INTERVAL = 1
+REQUEST_INTERVAL = 3
 SAVE_PATH = './data/'
 COMMENT_PAGE_FIRST_TIME = 100
 COMMENT_PAGE_EVERYDAY = 5
@@ -152,7 +152,7 @@ def saveto(data, path):
         f.write(dumps(data))
     return path
 
-def crawl_everyday(uid, save_path):
+def crawl_up_everyday(uid, save_path):
     _daystr = daystr()
     if not os.path.exists(save_path):
         os.mkdir(save_path)
@@ -352,6 +352,17 @@ def crawl_comment_async(uid, save_path):
     random.shuffle(downloader.tasks)
     downloader.download_async()
 
+
+def crawl_ups_everyday():
+    with open('ups.json', encoding='utf8') as f:
+        mids = loads(f.read())
+    for mid in mids:
+        print(f'{GREEN}crawling up[{mid}]...{RESET}')
+        up_data_dir = f'{SAVE_PATH}/{mid}'
+        if not os.path.exists(up_data_dir):
+            os.mkdir(up_data_dir)
+        crawl_up_everyday(mid, SAVE_PATH)
+
 # crawl_everyday(401742377, SAVE_PATH)
 # crawl_comment_async(401742377, SAVE_PATH)
 
@@ -360,8 +371,11 @@ def crawl_comment_async(uid, save_path):
 # _ = get_comments(298290791, 0, 1)
 # ic(_)
 
+# crawl_ups_everyday()
+
+
 scheduler = BlockingScheduler()
-scheduler.add_job(crawl_everyday, 'cron', hour=4, minute=0, args=(401742377, SAVE_PATH))
+scheduler.add_job(crawl_ups_everyday, 'cron', hour=4, minute=0)
 # 防止KeyboardInterrupt被忽略
 scheduler.add_job(lambda: None, 'interval', seconds=1)
 scheduler.start()
