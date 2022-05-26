@@ -134,7 +134,7 @@ def get_comments(aid, pg=1, pn=2^31-1):
         yield None
 
 
-REQUEST_INTERVAL = 3
+REQUEST_INTERVAL = 10
 SAVE_PATH = './data/'
 COMMENT_PAGE_FIRST_TIME = 100
 COMMENT_PAGE_EVERYDAY = 5
@@ -195,6 +195,7 @@ def crawl_up_everyday(uid, save_path):
         _video_info_path = saveto(_video_info, _video_info_path)
         sleep(REQUEST_INTERVAL)
 
+    return 
     # crawling comments then
     for _video in _videos:
         _bvid = _video['bvid']
@@ -361,7 +362,11 @@ def crawl_ups_everyday():
         up_data_dir = f'{SAVE_PATH}/{mid}'
         if not os.path.exists(up_data_dir):
             os.mkdir(up_data_dir)
-        crawl_up_everyday(mid, SAVE_PATH)
+
+        try:
+            crawl_up_everyday(mid, up_data_dir)
+        except Exception as e:
+            print(f'{RED}Error on crawling uid [{mid}]: {e} {RESET}')
 
 # crawl_everyday(401742377, SAVE_PATH)
 # crawl_comment_async(401742377, SAVE_PATH)
